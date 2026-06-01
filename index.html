@@ -4,491 +4,1168 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Keuangan">
-<title>Keuangan</title>
+<title>Keuangan & Investasi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #f7f3ea;
-    --card: #ffffff;
-    --ink: #1a1a1a;
-    --ink2: #888;
-    --border: #e5ddc8;
-    --accent-green: #4a8c5c;
-    --accent-red: #d04f3a;
-    --accent-yellow: #c9882b;
-    --accent-blue: #3a6fa0;
-    --accent-purple: #7a5ba6;
-    --accent-gray: #6b7280;
-    --makan: #d04f3a;
-    --bensin: #c9882b;
-    --groceries: #4a8c5c;
-    --investasi: #3a6fa0;
-    --gaji: #7a5ba6;
-    --dll: #6b7280;
-    --radius: 18px;
-    --radius-sm: 10px;
-  }
+:root {
+  --bg:#0f1117; --card:#181c27; --card2:#1e2335; --border:#252a3a;
+  --ink:#f0f2f8; --ink2:#6b7494; --ink3:#3a3f55;
+  --green:#3ecf8e; --red:#f04e5e; --yellow:#f5c842; --blue:#4d8ef7;
+  --purple:#a78bfa; --orange:#fb923c;
+  --r:16px; --rs:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:80px;-webkit-font-smoothing:antialiased;}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* NAV */
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom);}
+.nav-btn{flex:1;padding:12px 4px 10px;border:none;background:none;color:var(--ink2);font-size:10px;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .2s;}
+.nav-btn.active{color:var(--blue);}
+.nav-icon{font-size:20px;line-height:1;}
 
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    padding: 28px 16px 48px;
-    -webkit-font-smoothing: antialiased;
-  }
+/* PAGE */
+.page{display:none;max-width:560px;margin:0 auto;padding:20px 14px 20px;}
+.page.active{display:block;}
 
-  .container { max-width: 520px; margin: 0 auto; }
+/* TYPOGRAPHY */
+h1{font-family:'Fraunces',serif;font-size:32px;font-weight:600;letter-spacing:-0.02em;margin-bottom:4px;}
+h2{font-family:'Fraunces',serif;font-size:18px;font-weight:600;margin-bottom:14px;}
+h3{font-size:13px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
 
-  /* HEADER */
-  .header { margin-bottom: 20px; }
-  .title-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-  h1 {
-    font-family: 'Fraunces', serif;
-    font-size: 42px;
-    font-weight: 600;
-    letter-spacing: -0.03em;
-    line-height: 1;
-  }
-  .sync-area { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-  .sync-status { font-size: 11px; font-weight: 500; color: var(--ink2); transition: color .3s; }
-  .sync-btn {
-    background: var(--ink);
-    color: var(--bg);
-    border: none;
-    border-radius: 8px;
-    width: 34px; height: 34px;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: opacity .2s;
-  }
-  .sync-btn:disabled { opacity: .5; cursor: not-allowed; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .spinning { animation: spin .8s linear infinite; display: inline-block; }
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:12px;}
+.card2{background:var(--card2);border-radius:var(--rs);padding:14px;}
 
-  /* SALDO */
-  .saldo-box {
-    background: var(--ink);
-    color: var(--bg);
-    border-radius: var(--radius);
-    padding: 22px 24px;
-    position: relative;
-    overflow: hidden;
-  }
-  .saldo-box::before {
-    content: '';
-    position: absolute;
-    right: -30px; top: -30px;
-    width: 120px; height: 120px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.04);
-  }
-  .saldo-box::after {
-    content: '';
-    position: absolute;
-    right: 20px; bottom: -40px;
-    width: 90px; height: 90px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.03);
-  }
-  .saldo-label { font-size: 12px; opacity: .6; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 6px; }
-  .saldo-val {
-    font-family: 'Fraunces', serif;
-    font-size: 34px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    transition: color .3s;
-  }
+/* HERO */
+.hero{background:linear-gradient(135deg,#1a2040 0%,#0f1525 100%);border:1px solid #2a3050;border-radius:20px;padding:22px;margin-bottom:12px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;right:-40px;top:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(77,142,247,.12) 0%,transparent 70%);pointer-events:none;}
+.hero-label{font-size:11px;color:var(--ink2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+.hero-val{font-family:'Fraunces',serif;font-size:36px;font-weight:600;letter-spacing:-0.02em;line-height:1.1;}
+.hero-sub{font-size:13px;color:var(--ink2);margin-top:6px;}
 
-  /* STAT ROW */
-  .stat-row { display: flex; gap: 10px; margin: 12px 0; }
-  .stat {
-    flex: 1;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 14px 16px;
-    border-left: 4px solid;
-  }
-  .stat-label { font-size: 11px; color: var(--ink2); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
-  .stat-val { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600; }
-  .stat.masuk { border-left-color: var(--accent-green); }
-  .stat.masuk .stat-val { color: var(--accent-green); }
-  .stat.keluar { border-left-color: var(--accent-red); }
-  .stat.keluar .stat-val { color: var(--accent-red); }
+/* STAT ROW */
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:14px;}
+.stat-label{font-size:11px;color:var(--ink2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em;}
+.stat-val{font-family:'Fraunces',serif;font-size:20px;font-weight:600;}
+.stat-3{grid-template-columns:1fr 1fr 1fr;}
 
-  /* CARD */
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 14px;
-  }
-  .card-title {
-    font-family: 'Fraunces', serif;
-    font-size: 17px;
-    font-weight: 600;
-    margin-bottom: 14px;
-  }
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:100px;font-size:11px;font-weight:600;}
+.badge.pos{background:rgba(62,207,142,.12);color:var(--green);}
+.badge.neg{background:rgba(240,78,94,.12);color:var(--red);}
+.badge.neu{background:rgba(107,116,148,.12);color:var(--ink2);}
 
-  /* TOGGLE */
-  .toggle { display: flex; background: #f0ead9; border-radius: 12px; padding: 4px; gap: 4px; margin-bottom: 14px; }
-  .toggle-btn {
-    flex: 1; border: none; background: transparent; color: var(--ink);
-    padding: 10px; border-radius: 9px; font-size: 14px; font-weight: 500;
-    font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all .2s;
-  }
-  .toggle-btn.active { background: var(--ink); color: var(--bg); }
+/* TOGGLE */
+.toggle{display:flex;background:var(--card2);border-radius:12px;padding:4px;gap:4px;margin-bottom:14px;}
+.tog-btn{flex:1;border:none;background:transparent;color:var(--ink2);padding:9px;border-radius:9px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;}
+.tog-btn.active{background:var(--blue);color:#fff;}
 
-  /* FORM */
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-  .full { grid-column: 1 / -1; }
-  input, select {
-    width: 100%; border: 1px solid var(--border);
-    border-radius: var(--radius-sm); padding: 11px 13px;
-    font-size: 14px; font-family: 'DM Sans', sans-serif;
-    background: #fdfbf6; color: var(--ink);
-    transition: border-color .2s;
-    -webkit-appearance: none;
-  }
-  input:focus, select:focus { outline: none; border-color: var(--ink); }
-  input::placeholder { color: #bbb; }
-  .add-btn {
-    width: 100%; background: var(--ink); color: var(--bg);
-    border: none; border-radius: var(--radius-sm); padding: 13px;
-    font-size: 15px; font-weight: 600; font-family: 'DM Sans', sans-serif;
-    cursor: pointer; transition: opacity .2s; letter-spacing: .01em;
-  }
-  .add-btn:active { opacity: .8; }
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.full{grid-column:1/-1;}
+input,select,textarea{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:var(--rs);padding:11px 13px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--ink);transition:border-color .2s;-webkit-appearance:none;}
+input:focus,select:focus{outline:none;border-color:var(--blue);}
+input::placeholder{color:var(--ink3);}
+select option{background:#1e2335;}
+.btn-primary{width:100%;background:var(--blue);color:#fff;border:none;border-radius:var(--rs);padding:13px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity .2s;}
+.btn-primary:active{opacity:.8;}
+.btn-sm{border:none;border-radius:8px;padding:5px 11px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;transition:all .15s;}
 
-  /* BAR CHART */
-  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .bar-label { font-size: 13px; width: 90px; flex-shrink: 0; }
-  .bar-track { flex: 1; height: 7px; background: #f0ead9; border-radius: 4px; overflow: hidden; }
-  .bar-fill { height: 100%; border-radius: 4px; transition: width .5s ease; }
-  .bar-val { font-size: 12px; color: var(--ink2); width: 88px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+/* LIST */
+.list-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.filter-row{display:flex;gap:4px;flex-wrap:wrap;}
+.tx-row{display:flex;align-items:center;gap:12px;padding:11px 8px;border-radius:10px;margin:0 -8px;transition:background .15s;position:relative;}
+.tx-row:hover{background:var(--card2);}
+.tx-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.tx-info{flex:1;min-width:0;}
+.tx-cat{font-size:14px;font-weight:500;}
+.tx-meta{font-size:12px;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tx-amt{font-size:14px;font-weight:600;flex-shrink:0;font-variant-numeric:tabular-nums;}
+.del-btn{background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;padding:4px;opacity:0;transition:opacity .15s;flex-shrink:0;}
+.tx-row:hover .del-btn{opacity:1;}
+.empty{text-align:center;color:var(--ink2);font-size:14px;padding:24px 0;}
 
-  /* LIST */
-  .list-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-  .filter-row { display: flex; gap: 4px; }
-  .filter-btn {
-    border: none; padding: 5px 11px; border-radius: 8px; font-size: 12px;
-    font-family: 'DM Sans', sans-serif; cursor: pointer; background: transparent;
-    color: var(--ink2); font-weight: 500; transition: all .15s; text-transform: capitalize;
-  }
-  .filter-btn.active { background: var(--ink); color: var(--bg); }
+/* BAR */
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.bar-label{font-size:13px;width:95px;flex-shrink:0;color:var(--ink);}
+.bar-track{flex:1;height:6px;background:var(--card2);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;transition:width .5s ease;}
+.bar-val{font-size:12px;color:var(--ink2);width:75px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums;}
 
-  .tx-row {
-    display: flex; align-items: center; gap: 12px;
-    padding: 11px 8px; border-radius: 10px; margin: 0 -8px;
-    transition: background .15s; position: relative;
-  }
-  .tx-row:hover { background: #f5f1e8; }
-  .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-  .tx-info { flex: 1; min-width: 0; }
-  .tx-cat { font-size: 14px; font-weight: 500; }
-  .tx-meta { font-size: 12px; color: var(--ink2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .tx-amt { font-size: 14px; font-weight: 600; flex-shrink: 0; font-variant-numeric: tabular-nums; }
-  .del-btn {
-    background: none; border: none; color: var(--accent-red);
-    cursor: pointer; font-size: 14px; padding: 4px;
-    opacity: 0; transition: opacity .15s; flex-shrink: 0;
-  }
-  .tx-row:hover .del-btn { opacity: 1; }
+/* TREND */
+.trend-chart{height:80px;display:flex;align-items:flex-end;gap:4px;margin-bottom:8px;}
+.trend-bar{flex:1;border-radius:4px 4px 0 0;min-height:4px;transition:height .3s;position:relative;cursor:pointer;}
+.trend-bar:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);padding:4px 8px;border-radius:6px;font-size:11px;white-space:nowrap;color:var(--ink);z-index:10;}
+.trend-labels{display:flex;gap:4px;}
+.trend-label{flex:1;text-align:center;font-size:10px;color:var(--ink2);}
 
-  .empty { text-align: center; color: #bbb; font-size: 14px; padding: 24px 0; }
+/* PORTFOLIO */
+.asset-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.asset-row:last-child{border-bottom:none;}
+.asset-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:700;}
+.asset-info{flex:1;min-width:0;}
+.asset-name{font-size:14px;font-weight:500;}
+.asset-ticker{font-size:12px;color:var(--ink2);}
+.asset-right{text-align:right;flex-shrink:0;}
+.asset-val{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;}
+.asset-pnl{font-size:12px;font-weight:500;}
 
-  /* SHEETS LINK */
-  .sheets-link { text-align: center; padding: 8px 0 4px; }
-  .sheets-link a {
-    color: var(--accent-blue); font-size: 13px; font-weight: 500;
-    text-decoration: none; opacity: .8; transition: opacity .2s;
-  }
-  .sheets-link a:hover { opacity: 1; }
+/* GOAL */
+.goal-card{border:1px solid var(--border);border-radius:var(--rs);padding:14px;margin-bottom:10px;}
+.goal-progress{height:6px;background:var(--card2);border-radius:4px;overflow:hidden;margin:10px 0 6px;}
+.goal-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue),var(--purple));}
+.goal-info{display:flex;justify-content:space-between;font-size:12px;color:var(--ink2);}
 
-  /* TOAST */
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: var(--ink); color: var(--bg); padding: 10px 20px;
-    border-radius: 100px; font-size: 13px; font-weight: 500;
-    opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 999;
-    white-space: nowrap;
-  }
-  .toast.show { opacity: 1; }
+/* BUDGET ALERT */
+.budget-bar{height:8px;background:var(--card2);border-radius:4px;overflow:hidden;margin:6px 0;}
+.budget-fill{height:100%;border-radius:4px;transition:width .4s;}
 
-  @media (max-width: 400px) {
-    body { padding: 20px 12px 40px; }
-    h1 { font-size: 34px; }
-    .saldo-val { font-size: 28px; }
-  }
+/* SYNC */
+.sync-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.sync-status{font-size:12px;color:var(--ink2);}
+.sync-btn{background:var(--card2);border:1px solid var(--border);color:var(--ink);border-radius:8px;width:32px;height:32px;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinning{animation:spin .8s linear infinite;display:inline-block;}
+
+/* TOAST */
+.toast{position:fixed;bottom:85px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);color:var(--ink);padding:10px 20px;border-radius:100px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;white-space:nowrap;}
+.toast.show{opacity:1;}
+
+/* SECTION TAB */
+.tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;}
+.tab-btn{border:1px solid var(--border);background:transparent;color:var(--ink2);padding:6px 14px;border-radius:100px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;white-space:nowrap;transition:all .15s;}
+.tab-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:12px 0;}
+
+@media(max-width:400px){
+  body{padding-bottom:70px;}
+  h1{font-size:26px;}
+  .hero-val{font-size:28px;}
+  .stat-val{font-size:17px;}
+}
 </style>
 </head>
 <body>
-<div class="container">
-  <header class="header">
-    <div class="title-row">
-      <h1>Keuangan</h1>
-      <div class="sync-area">
-        <span class="sync-status" id="syncStatus">Belum disinkron</span>
-        <button class="sync-btn" id="syncBtn" title="Tarik dari Google Sheets" onclick="syncFromSheets()">⟳</button>
+
+<!-- PAGE: DASHBOARD -->
+<div class="page active" id="pg-dashboard">
+  <div style="padding:20px 14px 0;max-width:560px;margin:0 auto;">
+    <div class="sync-row">
+      <div>
+        <h1>Dashboard</h1>
+        <div class="sync-status" id="syncStatus">—</div>
+      </div>
+      <button class="sync-btn" onclick="syncFromSheets()" title="Sync dari Sheets" id="syncBtn">⟳</button>
+    </div>
+  </div>
+
+  <div style="max-width:560px;margin:0 auto;padding:0 14px;">
+    <div class="hero">
+      <div class="hero-label">Total Kekayaan Bersih</div>
+      <div class="hero-val" id="d-networth">Rp 0</div>
+      <div class="hero-sub" id="d-networthsub">Saldo + Portofolio</div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat">
+        <div class="stat-label">💰 Saldo</div>
+        <div class="stat-val" id="d-saldo" style="color:var(--green)">Rp 0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">📈 Portofolio</div>
+        <div class="stat-val" id="d-porto" style="color:var(--blue)">$0</div>
       </div>
     </div>
-    <div class="saldo-box">
-      <div class="saldo-label">Saldo saat ini</div>
-      <div class="saldo-val" id="saldoVal">Rp 0</div>
-    </div>
-  </header>
 
-  <div class="stat-row">
-    <div class="stat masuk">
-      <div class="stat-label">↓ Masuk</div>
-      <div class="stat-val" id="totalMasuk">Rp 0</div>
-    </div>
-    <div class="stat keluar">
-      <div class="stat-label">↑ Keluar</div>
-      <div class="stat-val" id="totalKeluar">Rp 0</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="toggle">
-      <button class="toggle-btn active" id="btnKeluar" onclick="setType('keluar')">Pengeluaran</button>
-      <button class="toggle-btn" id="btnMasuk" onclick="setType('masuk')">Pemasukan</button>
-    </div>
-    <div class="form-grid" id="formGrid">
-      <input type="number" id="inputAmount" placeholder="Jumlah (Rp)" inputmode="numeric">
-      <select id="inputCat">
-        <option value="Makan">🍜 Makan</option>
-        <option value="Bensin">⛽ Bensin</option>
-        <option value="Groceries">🛒 Groceries</option>
-        <option value="Investasi">📈 Investasi</option>
-        <option value="Dll">📦 Dll</option>
-      </select>
-      <input type="text" id="inputNote" class="full" placeholder="Catatan (opsional)">
-    </div>
-    <button class="add-btn" onclick="addTx()">+ Tambah & Sync</button>
-  </div>
-
-  <div class="card" id="chartCard" style="display:none">
-    <div class="card-title">Pengeluaran per Kategori</div>
-    <div id="chartBody"></div>
-  </div>
-
-  <div class="card">
-    <div class="list-head">
-      <div class="card-title" style="margin:0">Riwayat</div>
-      <div class="filter-row">
-        <button class="filter-btn active" onclick="setFilter('semua')">Semua</button>
-        <button class="filter-btn" onclick="setFilter('masuk')">Masuk</button>
-        <button class="filter-btn" onclick="setFilter('keluar')">Keluar</button>
+    <div class="stat-row">
+      <div class="stat">
+        <div class="stat-label">↓ Pemasukan (bln ini)</div>
+        <div class="stat-val" id="d-masuk" style="color:var(--green)">Rp 0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">↑ Pengeluaran (bln ini)</div>
+        <div class="stat-val" id="d-keluar" style="color:var(--red)">Rp 0</div>
       </div>
     </div>
-    <div id="txList"></div>
-  </div>
 
-  <div class="sheets-link">
-    <a href="https://docs.google.com/spreadsheets/d/1aQ3cNuvmzE3Z3O4wo_mFIZWpuF6VztDhSCrtA_eXjW0" target="_blank">📊 Buka Google Sheets →</a>
+    <!-- Trend 6 bulan -->
+    <div class="card">
+      <h3>Tren Keuangan 6 Bulan</h3>
+      <div class="trend-chart" id="trendChart"></div>
+      <div class="trend-labels" id="trendLabels"></div>
+    </div>
+
+    <!-- Budget Alert -->
+    <div class="card" id="budgetAlertCard">
+      <h3>⚠️ Budget Status</h3>
+      <div id="budgetAlerts"></div>
+    </div>
+
+    <!-- Top pengeluaran -->
+    <div class="card">
+      <h3>Pengeluaran per Kategori (Bln Ini)</h3>
+      <div id="d-catChart"></div>
+    </div>
   </div>
 </div>
+
+<!-- PAGE: CATAT -->
+<div class="page" id="pg-catat">
+  <div style="max-width:560px;margin:0 auto;padding:20px 14px 0;">
+    <h1 style="margin-bottom:16px;">Catat</h1>
+
+    <div class="card">
+      <div class="toggle">
+        <button class="tog-btn active" id="btnKeluar" onclick="setType('keluar')">Pengeluaran</button>
+        <button class="tog-btn" id="btnMasuk" onclick="setType('masuk')">Pemasukan</button>
+      </div>
+      <div class="form-grid" id="formGrid">
+        <input type="number" id="inputAmount" placeholder="Jumlah (Rp)" inputmode="numeric">
+        <select id="inputCat">
+          <option value="Makan">🍜 Makan</option>
+          <option value="Bensin">⛽ Bensin</option>
+          <option value="Groceries">🛒 Groceries</option>
+          <option value="Investasi">📈 Investasi</option>
+          <option value="Bisnis">🏪 Bisnis</option>
+          <option value="Langganan">📱 Langganan</option>
+          <option value="Transport">🚗 Transport</option>
+          <option value="Kesehatan">💊 Kesehatan</option>
+          <option value="Dll">📦 Dll</option>
+        </select>
+        <input type="text" id="inputNote" class="full" placeholder="Catatan (opsional)">
+      </div>
+      <button class="btn-primary" onclick="addTx()">+ Tambah & Sync</button>
+    </div>
+
+    <!-- Budget settings -->
+    <div class="card">
+      <div class="list-head">
+        <h2 style="margin:0;">Budget Limit</h2>
+        <button class="btn-sm" style="background:var(--blue);color:#fff;" onclick="saveBudgets()">Simpan</button>
+      </div>
+      <div id="budgetInputs"></div>
+    </div>
+
+    <!-- Goals -->
+    <div class="card">
+      <div class="list-head">
+        <h2 style="margin:0;">🎯 Goals / Tabungan</h2>
+        <button class="btn-sm" style="background:var(--card2);color:var(--ink2);" onclick="showAddGoal()">+ Tambah</button>
+      </div>
+      <div id="goalsList"></div>
+      <div id="addGoalForm" style="display:none;margin-top:12px;">
+        <div class="form-grid">
+          <input type="text" id="goalName" placeholder="Nama goal" class="full">
+          <input type="number" id="goalTarget" placeholder="Target (Rp)">
+          <input type="number" id="goalCurrent" placeholder="Sudah terkumpul (Rp)">
+        </div>
+        <button class="btn-primary" onclick="addGoal()">Simpan Goal</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: RIWAYAT -->
+<div class="page" id="pg-riwayat">
+  <div style="max-width:560px;margin:0 auto;padding:20px 14px 0;">
+    <h1 style="margin-bottom:16px;">Riwayat</h1>
+    <div class="card" style="padding:12px 14px;">
+      <div class="filter-row" id="filterRow">
+        <button class="btn-sm tab-btn active" onclick="setFilter('semua')">Semua</button>
+        <button class="btn-sm tab-btn" onclick="setFilter('masuk')">Masuk</button>
+        <button class="btn-sm tab-btn" onclick="setFilter('keluar')">Keluar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div id="txList"></div>
+    </div>
+    <div style="text-align:center;padding:8px 0;">
+      <a href="https://docs.google.com/spreadsheets/d/1aQ3cNuvmzE3Z3O4wo_mFIZWpuF6VztDhSCrtA_eXjW0" target="_blank" style="color:var(--blue);font-size:13px;font-weight:500;text-decoration:none;">📊 Buka Google Sheets →</a>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: PORTOFOLIO -->
+<div class="page" id="pg-porto">
+  <div style="max-width:560px;margin:0 auto;padding:20px 14px 0;">
+    <h1 style="margin-bottom:4px;">Portofolio</h1>
+    <div style="font-size:12px;color:var(--ink2);margin-bottom:16px;">Nanovest · Update: 1 Jun 2026 13:14</div>
+
+    <!-- Overview -->
+    <div class="hero" style="background:linear-gradient(135deg,#0f1a2e 0%,#0a1220 100%);border-color:#1a2a40;">
+      <div class="hero-label">Total Value (Nanovest)</div>
+      <div class="hero-val">$6,654.86</div>
+      <div style="display:flex;gap:16px;margin-top:10px;flex-wrap:wrap;">
+        <div>
+          <div class="hero-label">All-time P&L</div>
+          <div style="color:var(--green);font-weight:600;font-size:16px;">+$794.73 <span style="font-size:12px;">(+4.45%)</span></div>
+        </div>
+        <div>
+          <div class="hero-label">vs April</div>
+          <div style="color:var(--green);font-weight:600;font-size:16px;">+$2,118 ↑</div>
+        </div>
+        <div>
+          <div class="hero-label">IDR Cash Reserve</div>
+          <div style="color:var(--yellow);font-weight:600;font-size:16px;">Rp 74,2jt</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showPortoTab('holdings')">Holdings</button>
+      <button class="tab-btn" onclick="showPortoTab('history')">Histori</button>
+      <button class="tab-btn" onclick="showPortoTab('analysis')">Analisis</button>
+      <button class="tab-btn" onclick="showPortoTab('strategi')">Strategi</button>
+    </div>
+
+    <!-- Holdings -->
+    <div id="pt-holdings">
+      <!-- Profil Keuangan -->
+      <div class="card" style="margin-bottom:12px;">
+        <h3>👤 Profil Keuangan — Mei 2026</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div class="card2"><div class="stat-label">Income Bulanan</div><div style="font-weight:600;color:var(--green);font-size:15px;">Rp 33.000.000</div></div>
+          <div class="card2"><div class="stat-label">Tabungan/Bulan</div><div style="font-weight:600;color:var(--blue);font-size:15px;">Rp 24.000.000</div></div>
+          <div class="card2"><div class="stat-label">Saving Rate</div><div style="font-weight:600;color:var(--yellow);font-size:15px;">72.7% 🏆</div></div>
+          <div class="card2"><div class="stat-label">Konsumsi/Bulan</div><div style="font-weight:600;font-size:15px;">Rp 9.000.000</div></div>
+          <div class="card2" style="grid-column:1/-1;"><div class="stat-label">DCA BTC Harian</div><div style="font-weight:600;color:var(--yellow);font-size:15px;">Rp 500.000/hari ⚡ Autopilot</div></div>
+        </div>
+      </div>
+      <div class="card" id="assetList"></div>
+    </div>
+
+    <!-- History -->
+    <div id="pt-history" style="display:none;">
+      <div class="card" style="padding:12px 14px;margin-bottom:12px;">
+        <div class="filter-row">
+          <button class="tab-btn active btn-sm" onclick="setPortoFilter('all')">Semua</button>
+          <button class="tab-btn btn-sm" onclick="setPortoFilter('buy')">Buy</button>
+          <button class="tab-btn btn-sm" onclick="setPortoFilter('sell')">Sell</button>
+          <select onchange="filterPortoToken(this.value)" style="padding:5px 10px;font-size:12px;width:auto;flex-shrink:0;">
+            <option value="all">Semua Token</option>
+          </select>
+        </div>
+      </div>
+      <div class="card">
+        <div id="portoTxList"></div>
+      </div>
+    </div>
+
+    <!-- Analysis -->
+    <div id="pt-analysis" style="display:none;">
+      <div class="stat-row" style="grid-template-columns:1fr 1fr 1fr;">
+        <div class="stat"><div class="stat-label">Invested</div><div class="stat-val" style="font-size:15px;color:var(--blue);">$5,860</div></div>
+        <div class="stat"><div class="stat-label">Current</div><div class="stat-val" style="font-size:15px;">$6,655</div><div style="font-size:11px;color:var(--green);">+$2,118 vs Apr</div></div>
+        <div class="stat"><div class="stat-label">All-time P&L</div><div class="stat-val" style="font-size:15px;color:var(--green);">+$795</div><div style="font-size:11px;color:var(--green);">+4.45%</div></div>
+      </div>
+      <div class="card">
+        <h3>Alokasi Aset</h3>
+        <div id="allocationChart"></div>
+      </div>
+      <div class="card">
+        <h3>₿ DCA BTC Summary</h3>
+        <div id="btcDca"></div>
+      </div>
+      <div class="card">
+        <h3>🏆 Ranking P&L</h3>
+        <div id="topPerformer"></div>
+      </div>
+      <div class="card">
+        <h3>📅 Progress 2026</h3>
+        <div style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;">
+            <span>5 dari 12 bulan terisi</span>
+            <span style="color:var(--blue);">41.7%</span>
+          </div>
+          <div style="height:8px;background:var(--card2);border-radius:4px;overflow:hidden;">
+            <div style="width:41.7%;height:100%;background:linear-gradient(90deg,var(--blue),var(--purple));border-radius:4px;"></div>
+          </div>
+          <div style="display:flex;gap:4px;margin-top:8px;">
+            ${["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Ags","Sep","Okt","Nov","Des"].map((m,i)=>`<div style="flex:1;text-align:center;font-size:9px;color:${i<5?"var(--green)":"var(--ink3)"};">${i<5?"●":"○"}<br>${m}</div>`).join("")}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Strategi -->
+    <div id="pt-strategi" style="display:none;">
+      <!-- Log Keputusan -->
+      <div class="card">
+        <h3>📋 Log Keputusan Strategi</h3>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+
+          <div style="border-left:3px solid var(--green);padding:10px 12px;background:var(--card2);border-radius:0 var(--rs) var(--rs) 0;">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--ink2);">26 Apr</span>
+              <span style="font-size:11px;background:rgba(62,207,142,.15);color:var(--green);padding:2px 7px;border-radius:100px;">✅ Realized</span>
+            </div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:2px;">Jual 10 HYPE @ $40.12</div>
+            <div style="font-size:12px;color:var(--ink2);">Ambil profit dari batch pertama $31.39 · <span style="color:var(--green);">+$102</span></div>
+          </div>
+
+          <div style="border-left:3px solid var(--blue);padding:10px 12px;background:var(--card2);border-radius:0 var(--rs) var(--rs) 0;">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--ink2);">30 Apr</span>
+              <span style="font-size:11px;background:rgba(77,142,247,.15);color:var(--blue);padding:2px 7px;border-radius:100px;">⚡ Running</span>
+            </div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:2px;">Start BTC DCA Rp 500k/hari</div>
+            <div style="font-size:12px;color:var(--ink2);">Autopilot — konsisten sepanjang tahun</div>
+          </div>
+
+          <div style="border-left:3px solid var(--purple);padding:10px 12px;background:var(--card2);border-radius:0 var(--rs) var(--rs) 0;">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--ink2);">2 Mei</span>
+              <span style="font-size:11px;background:rgba(167,139,250,.15);color:var(--purple);padding:2px 7px;border-radius:100px;">✅ Deployed</span>
+            </div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:2px;">Top up Rp 24jt</div>
+            <div style="font-size:12px;color:var(--ink2);">Savings bulanan dari income Rp 33jt · saving rate 72.7% 🏆</div>
+          </div>
+
+          <div style="border-left:3px solid var(--green);padding:10px 12px;background:var(--card2);border-radius:0 var(--rs) var(--rs) 0;">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--ink2);">11 Mei</span>
+              <span style="font-size:11px;background:rgba(62,207,142,.15);color:var(--green);padding:2px 7px;border-radius:100px;">✅ Smart</span>
+            </div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:2px;">Trim HYPE 31.74 → 8.99 unit</div>
+            <div style="font-size:12px;color:var(--ink2);">27.5% portofolio terlalu besar — locked gains 🔒</div>
+          </div>
+
+          <div style="border-left:3px solid var(--yellow);padding:10px 12px;background:var(--card2);border-radius:0 var(--rs) var(--rs) 0;">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--ink2);">Mei</span>
+              <span style="font-size:11px;background:rgba(245,200,66,.15);color:var(--yellow);padding:2px 7px;border-radius:100px;">⏳ -9.4%</span>
+            </div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:2px;">Tambah MSTRX (MicroStrategy)</div>
+            <div style="font-size:12px;color:var(--ink2);">BTC proxy, satelit position</div>
+          </div>
+
+          <div style="border-left:3px solid var(--red);padding:10px 12px;background:var(--card2);border-radius:0 var(--rs) var(--rs) 0;">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--ink2);">Mei</span>
+              <span style="font-size:11px;background:rgba(240,78,94,.15);color:var(--red);padding:2px 7px;border-radius:100px;">⚠️ -14.9%</span>
+            </div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:2px;">Beli ONDO 1,941 unit</div>
+            <div style="font-size:12px;color:var(--ink2);">Diversifikasi ke DeFi/RWA — pantau ketat</div>
+          </div>
+
+          <div style="border-left:3px solid var(--blue);padding:10px 12px;background:var(--card2);border-radius:0 var(--rs) var(--rs) 0;">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--ink2);">Mei</span>
+              <span style="font-size:11px;background:rgba(77,142,247,.15);color:var(--blue);padding:2px 7px;border-radius:100px;">⏳ +3.85%</span>
+            </div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:2px;">Beli TSM + NVDAX tokenized</div>
+            <div style="font-size:12px;color:var(--ink2);">Taiwan Semi & NVIDIA — equity exposure via tokenized</div>
+          </div>
+
+          <div style="border-left:3px solid var(--red);padding:10px 12px;background:var(--card2);border-radius:0 var(--rs) var(--rs) 0;">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--ink2);">Mei</span>
+              <span style="font-size:11px;background:rgba(240,78,94,.15);color:var(--red);padding:2px 7px;border-radius:100px;">❌ Realized -$26</span>
+            </div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:2px;">Beli & Jual SOL</div>
+            <div style="font-size:12px;color:var(--ink2);">Trade singkat, tidak cocok dengan strategi</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rencana ke depan -->
+      <div class="card">
+        <h3>🎯 Rencana Juni–Des 2026</h3>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+
+          <div style="background:var(--card2);border-radius:var(--rs);padding:12px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:18px;">₿</span>
+              <span style="font-weight:600;font-size:13px;">BTC — DCA Autopilot</span>
+              <span class="badge pos" style="margin-left:auto;">34% porto</span>
+            </div>
+            <div style="font-size:12px;color:var(--ink2);line-height:1.6;">Rp 500k/hari, tidak perlu keputusan. Tetap konsisten tanpa melihat harga.</div>
+          </div>
+
+          <div style="background:var(--card2);border-radius:var(--rs);padding:12px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:18px;">⚡</span>
+              <span style="font-weight:600;font-size:13px;">HYPE — Watch $80</span>
+              <span class="badge pos" style="margin-left:auto;">+29.11%</span>
+            </div>
+            <div style="font-size:12px;color:var(--ink2);line-height:1.6;">Sedang profit besar. Pertimbangkan partial profit lagi di atas $80. <strong style="color:var(--yellow);">Jangan tambah di level ini.</strong></div>
+          </div>
+
+          <div style="background:var(--card2);border-radius:var(--rs);padding:12px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:18px;">◎</span>
+              <span style="font-weight:600;font-size:13px;">ONDO — Decision Point</span>
+              <span class="badge neg" style="margin-left:auto;">-14.93%</span>
+            </div>
+            <div style="font-size:12px;color:var(--ink2);line-height:1.6;"><strong style="color:var(--red);">Tentukan:</strong> cut loss atau average down? Set batas maksimal kerugian yang bisa ditoleransi.</div>
+          </div>
+
+          <div style="background:rgba(245,200,66,.07);border:1px solid rgba(245,200,66,.2);border-radius:var(--rs);padding:12px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:18px;">⚠️</span>
+              <span style="font-weight:600;font-size:13px;color:var(--yellow);">Hati-hati Aset Baru</span>
+            </div>
+            <div style="font-size:12px;color:var(--ink2);line-height:1.6;">Dari 4 → 8 aset dalam 1 bulan cukup agresif. Pahami tiap posisi dulu sebelum tambah yang baru.</div>
+          </div>
+
+          <div style="background:rgba(77,142,247,.07);border:1px solid rgba(77,142,247,.2);border-radius:var(--rs);padding:12px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+              <span style="font-size:18px;">📤</span>
+              <span style="font-weight:600;font-size:13px;color:var(--blue);">Update Tracker</span>
+            </div>
+            <div style="font-size:12px;color:var(--ink2);">Kirim CSV akhir bulan Juni untuk update. Target: pantau apakah diversifikasi Mei terbayar.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="nav">
+  <button class="nav-btn active" onclick="goPage('dashboard')"><span class="nav-icon">⊞</span>Dashboard</button>
+  <button class="nav-btn" onclick="goPage('catat')"><span class="nav-icon">＋</span>Catat</button>
+  <button class="nav-btn" onclick="goPage('riwayat')"><span class="nav-icon">☰</span>Riwayat</button>
+  <button class="nav-btn" onclick="goPage('porto')"><span class="nav-icon">📈</span>Portofolio</button>
+</nav>
 
 <div class="toast" id="toast"></div>
 
 <script>
+// ═══════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxO0i0d0TOJaBZ1TITVqVyNKtPYG6uEuMlVKHoeCx4YUIKI3xzS57AYN0gupkN-gecsIg/exec";
+const USD_IDR = 16350; // kurs approx
 
 const CATS = {
-  Makan:     { color: "#d04f3a", emoji: "🍜" },
-  Bensin:    { color: "#c9882b", emoji: "⛽" },
-  Groceries: { color: "#4a8c5c", emoji: "🛒" },
-  Investasi: { color: "#3a6fa0", emoji: "📈" },
-  Gaji:      { color: "#7a5ba6", emoji: "💼" },
-  Dll:       { color: "#6b7280", emoji: "📦" },
+  Makan:     {color:"#e05555",emoji:"🍜"},
+  Bensin:    {color:"#d4882a",emoji:"⛽"},
+  Groceries: {color:"#3ecf8e",emoji:"🛒"},
+  Investasi: {color:"#4d8ef7",emoji:"📈"},
+  Bisnis:    {color:"#a78bfa",emoji:"🏪"},
+  Langganan: {color:"#fb923c",emoji:"📱"},
+  Transport: {color:"#38bdf8",emoji:"🚗"},
+  Kesehatan: {color:"#f472b6",emoji:"💊"},
+  Gaji:      {color:"#3ecf8e",emoji:"💼"},
+  Dll:       {color:"#6b7494",emoji:"📦"},
 };
 
+const TOKEN_META = {
+  BTC:  {name:"Bitcoin",icon:"₿",color:"#f7931a"},
+  HYPE: {name:"Hyperliquid",icon:"⚡",color:"#7c5cbf"},
+  USDC: {name:"USDC",icon:"$",color:"#2775ca"},
+  ONDO: {name:"Ondo",icon:"◎",color:"#1a6cf0"},
+  TSM:  {name:"TSMC (xStock)",icon:"🏭",color:"#00a8e0"},
+  NEAR: {name:"NEAR Protocol",icon:"Ⓝ",color:"#00c08b"},
+  NVDAX:{name:"NVIDIA (xStock)",icon:"🟢",color:"#76b900"},
+  MSTRX:{name:"MicroStrategy (xStock)",icon:"🟠",color:"#f5a623"},
+  USDT: {name:"Tether USDT",icon:"₮",color:"#26a17b"},
+  SOL:  {name:"Solana",icon:"◎",color:"#9945ff"},
+  VCHF: {name:"VNX Swiss Franc",icon:"🇨🇭",color:"#e63946"},
+};
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
 let transactions = JSON.parse(localStorage.getItem("keuangan_tx") || "[]");
+let budgets = JSON.parse(localStorage.getItem("keuangan_budgets") || JSON.stringify({Makan:800000,Bensin:400000,Groceries:600000}));
+let goals = JSON.parse(localStorage.getItem("keuangan_goals") || "[]");
 let currentType = "keluar";
 let currentFilter = "semua";
+let portoFilter = {type:"all", token:"all"};
 
+// ═══════════════════════════════════════════════════
+// PORTFOLIO DATA (from Nanovest export)
+// ═══════════════════════════════════════════════════
+const PORTFOLIO_ASSETS = [
+  {ticker:"BTC", name:"Bitcoin", price:73185.01, h24:-0.95, d7:-5.19, holdings:2286.52, amount:0.03124, avgBuy:77442.24, pnl:40.53, pnlPct:0.65},
+  {ticker:"HYPE", name:"Hyperliquid", price:73.12, h24:5.09, d7:17.05, holdings:1241.45, amount:16.98, avgBuy:43.63, pnl:907.81, pnlPct:29.11},
+  {ticker:"USDC", name:"USDC", price:0.9995, h24:-0.01, d7:-0.01, holdings:790.82, amount:791.17, avgBuy:0.9937, pnl:12.92, pnlPct:0.49},
+  {ticker:"ONDO", name:"Ondo", price:0.3552, h24:-3.32, d7:-19.45, holdings:689.53, amount:1941.00, avgBuy:0.4175, pnl:-120.97, pnlPct:-14.93},
+  {ticker:"TSM", name:"TSMC (Derivatives)", price:424.49, h24:0.51, d7:2.85, holdings:504.72, amount:1.189, avgBuy:408.76, pnl:18.71, pnlPct:3.85},
+  {ticker:"NEAR", name:"NEAR Protocol", price:2.3162, h24:-0.19, d7:-3.72, holdings:433.12, amount:187.00, avgBuy:2.3097, pnl:1.21, pnlPct:0.28},
+  {ticker:"NVDAX", name:"NVIDIA (xStock)", price:216.53, h24:0.00, d7:-1.63, holdings:388.24, amount:1.793, avgBuy:220.74, pnl:-7.54, pnlPct:-1.90},
+  {ticker:"MSTRX", name:"MicroStrategy (xStock)", price:158.85, h24:-0.59, d7:-3.47, holdings:319.85, amount:2.0135, avgBuy:175.33, pnl:-33.19, pnlPct:-9.40},
+];
+
+const PORTFOLIO_TRANSACTIONS = [
+  {date:"2026-06-01",token:"BTC",type:"buy",price:73219.25,amount:0.0003806,total:27.87},
+  {date:"2026-06-01",token:"USDC",type:"sell",price:0.9996,amount:28.00,total:27.99},
+  {date:"2026-05-31",token:"BTC",type:"buy",price:74081.25,amount:0.0003774,total:27.96},
+  {date:"2026-05-31",token:"USDC",type:"sell",price:0.9996,amount:28.00,total:27.99},
+  {date:"2026-05-30",token:"ONDO",type:"buy",price:0.345,amount:131.00,total:45.20},
+  {date:"2026-05-30",token:"BTC",type:"buy",price:73524.27,amount:0.0003794,total:27.90},
+  {date:"2026-05-30",token:"USDC",type:"sell",price:0.9996,amount:28.00,total:27.99},
+  {date:"2026-05-29",token:"BTC",type:"buy",price:73505.19,amount:0.0003795,total:27.90},
+  {date:"2026-05-29",token:"USDC",type:"sell",price:0.9996,amount:28.00,total:27.99},
+  {date:"2026-05-28",token:"BTC",type:"buy",price:74214.35,amount:0.0003766,total:27.95},
+  {date:"2026-05-28",token:"USDC",type:"sell",price:0.9995,amount:28.00,total:27.99},
+  {date:"2026-05-27",token:"BTC",type:"buy",price:75771.08,amount:0.0003688,total:27.94},
+  {date:"2026-05-27",token:"USDC",type:"sell",price:0.9995,amount:28.00,total:27.99},
+  {date:"2026-05-26",token:"BTC",type:"buy",price:76506.89,amount:0.0003662,total:28.02},
+  {date:"2026-05-26",token:"USDC",type:"sell",price:0.9996,amount:28.00,total:27.99},
+  {date:"2026-05-25",token:"BTC",type:"buy",price:76842.70,amount:0.0003653,total:28.07},
+  {date:"2026-05-25",token:"USDC",type:"sell",price:0.9997,amount:28.00,total:27.99},
+  {date:"2026-05-24",token:"BTC",type:"buy",price:76811.53,amount:0.000362,total:27.81},
+  {date:"2026-05-24",token:"USDC",type:"sell",price:0.9997,amount:28.00,total:27.99},
+  {date:"2026-05-23",token:"BTC",type:"buy",price:4.2339,amount:0.0003722,total:0.001575},
+  {date:"2026-05-22",token:"NEAR",type:"buy",price:2.3097,amount:187.00,total:432.31},
+  {date:"2026-05-22",token:"SOL",type:"sell",price:81.52,amount:5.00,total:407.60},
+  {date:"2026-05-22",token:"TSM",type:"buy",price:408.76,amount:1.189,total:486.21},
+  {date:"2026-05-22",token:"NVDAX",type:"buy",price:220.74,amount:1.793,total:395.79},
+  {date:"2026-05-22",token:"BTC",type:"buy",price:77427.44,amount:0.00036,total:27.87},
+  {date:"2026-05-22",token:"ONDO",type:"buy",price:0.4481,amount:555.00,total:248.70},
+  {date:"2026-05-22",token:"HYPE",type:"buy",price:61.29,amount:13.78,total:844.58},
+  {date:"2026-05-22",token:"ONDO",type:"buy",price:0.4471,amount:505.00,total:225.79},
+  {date:"2026-05-22",token:"HYPE",type:"sell",price:57.46,amount:10.00,total:574.60},
+  {date:"2026-05-21",token:"BTC",type:"buy",price:77249.24,amount:0.0003624,total:28.00},
+  {date:"2026-05-20",token:"BTC",type:"buy",price:76836.00,amount:0.00035,total:26.89},
+  {date:"2026-05-19",token:"BTC",type:"buy",price:76661.00,amount:0.00036,total:27.60},
+  {date:"2026-05-18",token:"MSTRX",type:"buy",price:163.86,amount:0.5163,total:84.61},
+  {date:"2026-05-18",token:"MSTRX",type:"buy",price:170.73,amount:0.2339,total:39.93},
+  {date:"2026-05-18",token:"BTC",type:"buy",price:76800.00,amount:0.00036,total:27.65},
+  {date:"2026-05-17",token:"ONDO",type:"buy",price:0.3561,amount:250.00,total:89.02},
+  {date:"2026-05-17",token:"BTC",type:"buy",price:4.4028,amount:0.00035,total:0.001540},
+  {date:"2026-05-17",token:"MSTRX",type:"buy",price:172.89,amount:0.2347,total:40.59},
+  {date:"2026-05-16",token:"BTC",type:"buy",price:78365.00,amount:0.00035,total:27.43},
+  {date:"2026-05-16",token:"MSTRX",type:"buy",price:172.22,amount:0.2347,total:40.42},
+  {date:"2026-05-15",token:"BTC",type:"buy",price:80577.83,amount:0.000348,total:28.04},
+  {date:"2026-05-15",token:"MSTRX",type:"buy",price:172.58,amount:0.2327,total:40.17},
+  {date:"2026-05-14",token:"BTC",type:"buy",price:80285.00,amount:0.00035,total:28.10},
+  {date:"2026-05-13",token:"BTC",type:"buy",price:79100.00,amount:0.000354,total:28.00},
+  {date:"2026-05-12",token:"BTC",type:"buy",price:77500.00,amount:0.000361,total:27.97},
+  {date:"2026-05-11",token:"BTC",type:"buy",price:75800.00,amount:0.000369,total:27.97},
+  {date:"2026-05-10",token:"BTC",type:"buy",price:74500.00,amount:0.000376,total:28.01},
+  {date:"2026-05-09",token:"BTC",type:"buy",price:74200.00,amount:0.000377,total:27.97},
+  {date:"2026-05-08",token:"BTC",type:"buy",price:73900.00,amount:0.000379,total:28.01},
+  {date:"2026-05-07",token:"BTC",type:"buy",price:73500.00,amount:0.000381,total:27.99},
+  {date:"2026-05-06",token:"BTC",type:"buy",price:72800.00,amount:0.000385,total:28.01},
+  {date:"2026-05-05",token:"BTC",type:"buy",price:72100.00,amount:0.000388,total:27.97},
+  {date:"2026-05-04",token:"BTC",type:"buy",price:71800.00,amount:0.00039,total:28.00},
+  {date:"2026-05-03",token:"BTC",type:"buy",price:71500.00,amount:0.000392,total:28.01},
+  {date:"2026-05-02",token:"BTC",type:"buy",price:70900.00,amount:0.000395,total:28.01},
+  {date:"2026-05-01",token:"HYPE",type:"buy",price:36.50,amount:0.356,total:13.00},
+  {date:"2026-05-01",token:"BTC",type:"buy",price:70200.00,amount:0.000399,total:28.01},
+  {date:"2026-04-30",token:"HYPE",type:"buy",price:35.20,amount:0.375,total:13.20},
+  {date:"2026-04-30",token:"BTC",type:"buy",price:69800.00,amount:0.000401,total:28.00},
+  {date:"2026-04-29",token:"HYPE",type:"buy",price:38.10,amount:0.347,total:13.22},
+  {date:"2026-04-29",token:"BTC",type:"buy",price:70100.00,amount:0.000399,total:27.97},
+  {date:"2026-04-28",token:"HYPE",type:"buy",price:37.90,amount:0.348,total:13.19},
+  {date:"2026-04-28",token:"BTC",type:"buy",price:69500.00,amount:0.000403,total:28.00},
+  {date:"2026-04-27",token:"HYPE",type:"buy",price:39.50,amount:0.334,total:13.20},
+  {date:"2026-04-27",token:"BTC",type:"buy",price:68900.00,amount:0.000406,total:27.99},
+  {date:"2026-04-26",token:"HYPE",type:"buy",price:40.10,amount:0.329,total:13.19},
+  {date:"2026-04-26",token:"BTC",type:"buy",price:69200.00,amount:0.000405,total:28.01},
+  {date:"2026-04-25",token:"HYPE",type:"buy",price:41.20,amount:0.320,total:13.18},
+  {date:"2026-04-25",token:"BTC",type:"buy",price:69800.00,amount:0.000401,total:28.00},
+  {date:"2026-04-24",token:"HYPE",type:"buy",price:42.30,amount:0.312,total:13.20},
+  {date:"2026-04-24",token:"BTC",type:"buy",price:70500.00,amount:0.000397,total:27.99},
+  {date:"2026-04-23",token:"HYPE",type:"buy",price:43.10,amount:0.306,total:13.19},
+  {date:"2026-04-23",token:"BTC",type:"buy",price:71200.00,amount:0.000393,total:27.99},
+  {date:"2026-04-22",token:"HYPE",type:"buy",price:44.00,amount:0.300,total:13.20},
+  {date:"2026-04-22",token:"BTC",type:"buy",price:72100.00,amount:0.000388,total:27.97},
+  {date:"2026-04-21",token:"HYPE",type:"buy",price:43.50,amount:0.303,total:13.19},
+  {date:"2026-04-21",token:"BTC",type:"buy",price:71800.00,amount:0.000390,total:28.00},
+  {date:"2026-04-20",token:"HYPE",type:"buy",price:42.80,amount:0.308,total:13.18},
+  {date:"2026-04-20",token:"BTC",type:"buy",price:72300.00,amount:0.000387,total:27.97},
+  {date:"2026-04-19",token:"HYPE",type:"buy",price:43.60,amount:0.302,total:13.17},
+  {date:"2026-04-19",token:"BTC",type:"buy",price:71500.00,amount:0.000391,total:27.98},
+  {date:"2026-04-18",token:"HYPE",type:"buy",price:44.10,amount:0.299,total:13.18},
+  {date:"2026-04-18",token:"BTC",type:"buy",price:72800.00,amount:0.000385,total:28.00},
+  {date:"2026-04-17",token:"HYPE",type:"buy",price:44.80,amount:0.294,total:13.17},
+  {date:"2026-04-17",token:"BTC",type:"buy",price:73500.00,amount:0.000381,total:28.01},
+  {date:"2026-04-16",token:"HYPE",type:"buy",price:44.50,amount:0.296,total:13.17},
+  {date:"2026-04-16",token:"BTC",type:"buy",price:73900.00,amount:0.000379,total:28.00},
+  {date:"2026-04-15",token:"HYPE",type:"buy",price:44.21,amount:0.327,total:14.46},
+  {date:"2026-04-15",token:"BTC",type:"buy",price:74100.00,amount:0.000392,total:29.05},
+  {date:"2026-04-14",token:"HYPE",type:"buy",price:41.06,amount:0.324,total:13.30},
+  {date:"2026-04-14",token:"BTC",type:"buy",price:74745.06,amount:0.000389,total:29.08},
+  {date:"2026-04-13",token:"HYPE",type:"buy",price:41.06,amount:0.347,total:14.25},
+  {date:"2026-04-13",token:"HYPE",type:"buy",price:41.22,amount:11.80,total:486.40},
+  {date:"2026-04-13",token:"BTC",type:"buy",price:71100.00,amount:0.000409,total:29.08},
+  {date:"2026-04-12",token:"HYPE",type:"buy",price:41.29,amount:0.353,total:14.58},
+  {date:"2026-04-12",token:"BTC",type:"buy",price:71600.00,amount:0.000406,total:29.07},
+  {date:"2026-04-11",token:"HYPE",type:"buy",price:42.07,amount:0.345,total:14.51},
+  {date:"2026-04-11",token:"BTC",type:"buy",price:72671.55,amount:0.0004,total:29.07},
+  {date:"2026-04-10",token:"HYPE",type:"sell",price:40.12,amount:11.77,total:472.21},
+  {date:"2026-04-10",token:"BTC",type:"buy",price:72100.00,amount:0.000403,total:29.06},
+  {date:"2026-04-09",token:"VCHF",type:"buy",price:1.265,amount:69.00,total:87.28},
+  {date:"2026-04-09",token:"BTC",type:"buy",price:71100.00,amount:0.000411,total:29.22},
+  {date:"2026-04-08",token:"BTC",type:"buy",price:71400.00,amount:0.00041,total:29.27},
+  {date:"2026-04-07",token:"BTC",type:"buy",price:69223.00,amount:0.000421,total:29.14},
+  {date:"2026-04-06",token:"BTC",type:"buy",price:69338.00,amount:0.000423,total:29.33},
+  {date:"2026-04-05",token:"BTC",type:"buy",price:67375.00,amount:0.000438,total:29.51},
+  {date:"2026-04-04",token:"USDC",type:"buy",price:0.9997,amount:466.00,total:465.86},
+  {date:"2026-04-04",token:"BTC",type:"buy",price:67781.00,amount:0.000435,total:29.48},
+  {date:"2026-04-03",token:"BTC",type:"buy",price:67290.00,amount:0.000435,total:29.27},
+  {date:"2026-04-02",token:"BTC",type:"buy",price:66100.00,amount:0.000444,total:29.35},
+  {date:"2026-04-01",token:"BTC",type:"buy",price:68600.00,amount:0.000429,total:29.43},
+  {date:"2026-03-31",token:"BTC",type:"buy",price:66753.00,amount:0.000441,total:29.44},
+  {date:"2026-03-30",token:"BTC",type:"buy",price:67753.00,amount:0.000432,total:29.27},
+  {date:"2026-03-29",token:"BTC",type:"buy",price:66691.00,amount:0.000441,total:29.41},
+  {date:"2026-03-28",token:"BTC",type:"buy",price:65954.00,amount:0.000443,total:29.22},
+  {date:"2026-03-27",token:"BTC",type:"buy",price:68319.00,amount:0.000427,total:29.17},
+  {date:"2026-03-26",token:"BTC",type:"buy",price:69900.00,amount:0.000423,total:29.57},
+  {date:"2026-03-25",token:"BTC",type:"buy",price:71564.59,amount:0.000416,total:29.77},
+  {date:"2026-03-23",token:"BTC",type:"buy",price:70000.00,amount:0.000429,total:30.03},
+  {date:"2026-03-22",token:"BTC",type:"buy",price:69000.00,amount:0.000426,total:29.39},
+  {date:"2026-03-21",token:"BTC",type:"buy",price:70800.00,amount:0.000415,total:29.38},
+  {date:"2026-03-19",token:"BTC",type:"buy",price:70795.00,amount:0.0015,total:106.19},
+  {date:"2026-03-13",token:"BTC",type:"buy",price:71214.00,amount:0.000414,total:29.48},
+  {date:"2026-03-07",token:"BTC",type:"buy",price:68150.00,amount:0.000865,total:58.95},
+  {date:"2026-03-05",token:"HYPE",type:"buy",price:31.39,amount:11.77,total:369.46},
+  {date:"2026-03-04",token:"BTC",type:"buy",price:68410.00,amount:0.002391,total:163.57},
+  {date:"2026-02-25",token:"BTC",type:"buy",price:65511.00,amount:0.001371,total:89.82},
+  {date:"2026-02-18",token:"BTC",type:"buy",price:67251.00,amount:0.000327,total:21.99},
+  {date:"2026-02-16",token:"BTC",type:"buy",price:68955.00,amount:0.000818,total:56.41},
+  {date:"2026-02-06",token:"BTC",type:"buy",price:67363.00,amount:0.000742,total:49.98},
+  {date:"2026-02-06",token:"BTC",type:"buy",price:65000.00,amount:0.000769,total:49.98},
+  {date:"2026-02-06",token:"BTC",type:"buy",price:62000.00,amount:0.000806,total:49.97},
+  {date:"2026-02-02",token:"BTC",type:"buy",price:75640.00,amount:0.000604,total:45.69},
+  {date:"2026-02-02",token:"BTC",type:"buy",price:76495.00,amount:0.00497,total:380.18},
+  {date:"2026-01-28",token:"BTC",type:"buy",price:89417.00,amount:0.00806,total:720.70},
+  {date:"2026-01-20",token:"BTC",type:"buy",price:90681.00,amount:0.00033,total:29.92},
+  {date:"2026-01-20",token:"BTC",type:"buy",price:91639.64,amount:0.002351,total:215.44},
+];
+
+// ═══════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════
 const fmt = n => "Rp " + Math.round(n).toLocaleString("id-ID");
+const fmtUSD = n => "$" + Math.abs(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtShort = n => n>=1e9?"Rp"+(n/1e9).toFixed(1)+"M":n>=1e6?"Rp"+(n/1e6).toFixed(1)+"jt":n>=1e3?"Rp"+(n/1e3).toFixed(0)+"rb":"Rp"+n;
 
-function save() {
-  localStorage.setItem("keuangan_tx", JSON.stringify(transactions));
+function save() { localStorage.setItem("keuangan_tx", JSON.stringify(transactions)); }
+
+function toast(msg, dur=2500) {
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.classList.add("show");
+  setTimeout(()=>el.classList.remove("show"), dur);
 }
 
+// ═══════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════
+function goPage(id) {
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("pg-"+id).classList.add("active");
+  document.querySelectorAll(".nav-btn")[["dashboard","catat","riwayat","porto"].indexOf(id)].classList.add("active");
+  if(id==="dashboard") renderDashboard();
+  if(id==="riwayat") renderList();
+  if(id==="porto") renderPorto();
+  if(id==="catat") renderBudgetInputs(); renderGoals();
+}
+
+// ═══════════════════════════════════════════════════
+// TYPE & FILTER
+// ═══════════════════════════════════════════════════
 function setType(t) {
   currentType = t;
-  document.getElementById("btnKeluar").classList.toggle("active", t === "keluar");
-  document.getElementById("btnMasuk").classList.toggle("active", t === "masuk");
-  const catSel = document.getElementById("inputCat");
-  catSel.style.display = t === "masuk" ? "none" : "";
-  catSel.closest ? null : null;
-  // adjust grid
-  document.getElementById("inputNote").className = t === "masuk" ? "full" : "";
+  document.getElementById("btnKeluar").classList.toggle("active", t==="keluar");
+  document.getElementById("btnMasuk").classList.toggle("active", t==="masuk");
+  document.getElementById("inputCat").style.display = t==="masuk" ? "none" : "";
+  document.getElementById("inputNote").className = t==="masuk" ? "full" : "";
 }
 
 function setFilter(f) {
   currentFilter = f;
-  document.querySelectorAll(".filter-btn").forEach((b, i) => {
-    b.classList.toggle("active", ["semua","masuk","keluar"][i] === f);
+  document.querySelectorAll("#filterRow .tab-btn").forEach((b,i)=>{
+    b.classList.toggle("active", ["semua","masuk","keluar"][i]===f);
   });
   renderList();
 }
 
+// ═══════════════════════════════════════════════════
+// ADD TRANSACTION
+// ═══════════════════════════════════════════════════
 function addTx() {
   const val = parseFloat(document.getElementById("inputAmount").value);
-  if (!val || val <= 0) { toast("Masukkan jumlah yang valid"); return; }
+  if(!val||val<=0){toast("⚠️ Masukkan jumlah yang valid");return;}
   const note = document.getElementById("inputNote").value.trim();
-  const cat = currentType === "masuk" ? "Gaji" : document.getElementById("inputCat").value;
-  const entry = { id: Date.now(), type: currentType, amount: val, cat, note, date: new Date().toISOString() };
+  const cat = currentType==="masuk"?"Gaji":document.getElementById("inputCat").value;
+  const entry = {id:Date.now(),type:currentType,amount:val,cat,note,date:new Date().toISOString()};
   transactions.unshift(entry);
   save();
-  document.getElementById("inputAmount").value = "";
-  document.getElementById("inputNote").value = "";
-  render();
+  document.getElementById("inputAmount").value="";
+  document.getElementById("inputNote").value="";
+  // check budget
+  if(currentType==="keluar" && budgets[cat]) {
+    const spent = getMonthSpend(cat);
+    const pct = spent/budgets[cat]*100;
+    if(pct>=90) toast(`⚠️ Budget ${cat} hampir habis! (${pct.toFixed(0)}%)`, 4000);
+  }
+  renderDashboard();
   syncToSheets();
+  toast("✓ Transaksi ditambahkan");
 }
 
-function removeTx(id) {
-  transactions = transactions.filter(t => t.id !== id);
-  save();
-  render();
-  syncToSheets();
+function getMonthSpend(cat) {
+  const now = new Date();
+  return transactions.filter(t=>t.type==="keluar"&&t.cat===cat&&new Date(t.date).getMonth()===now.getMonth()&&new Date(t.date).getFullYear()===now.getFullYear()).reduce((s,t)=>s+t.amount,0);
 }
 
-function render() {
-  const masuk = transactions.filter(t => t.type === "masuk").reduce((s, t) => s + t.amount, 0);
-  const keluar = transactions.filter(t => t.type === "keluar").reduce((s, t) => s + t.amount, 0);
-  const saldo = masuk - keluar;
-
-  document.getElementById("saldoVal").textContent = fmt(saldo);
-  document.getElementById("saldoVal").style.color = saldo < 0 ? "#e05c5c" : "#f7f3ea";
-  document.getElementById("totalMasuk").textContent = fmt(masuk);
-  document.getElementById("totalKeluar").textContent = fmt(keluar);
-
-  renderChart();
-  renderList();
-}
-
-function renderChart() {
-  const byCat = {};
-  transactions.filter(t => t.type === "keluar").forEach(t => {
-    byCat[t.cat] = (byCat[t.cat] || 0) + t.amount;
-  });
-  const entries = Object.entries(byCat).sort((a,b) => b[1] - a[1]);
-  const card = document.getElementById("chartCard");
-  if (!entries.length) { card.style.display = "none"; return; }
-  card.style.display = "";
-  const max = entries[0][1];
-  document.getElementById("chartBody").innerHTML = entries.map(([c, v]) => `
-    <div class="bar-row">
-      <span class="bar-label">${CATS[c]?.emoji || "📦"} ${c}</span>
-      <div class="bar-track"><div class="bar-fill" style="width:${(v/max*100).toFixed(1)}%;background:${CATS[c]?.color||"#6b7280"}"></div></div>
-      <span class="bar-val">${fmt(v)}</span>
+// ═══════════════════════════════════════════════════
+// BUDGET
+// ═══════════════════════════════════════════════════
+function renderBudgetInputs() {
+  const cats = ["Makan","Bensin","Groceries","Investasi","Transport","Langganan","Dll"];
+  document.getElementById("budgetInputs").innerHTML = cats.map(c=>`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <span style="width:100px;font-size:13px;">${CATS[c].emoji} ${c}</span>
+      <input type="number" id="budget_${c}" value="${budgets[c]||''}" placeholder="Limit (Rp)" style="flex:1;">
     </div>`).join("");
 }
 
-function renderList() {
-  const shown = currentFilter === "semua" ? transactions : transactions.filter(t => t.type === currentFilter);
-  if (!shown.length) {
-    document.getElementById("txList").innerHTML = '<p class="empty">Belum ada transaksi.</p>';
-    return;
-  }
-  document.getElementById("txList").innerHTML = shown.map(t => {
-    const isIn = t.type === "masuk";
-    const dotColor = isIn ? "#4a8c5c" : (CATS[t.cat]?.color || "#6b7280");
-    const label = isIn ? "💼 Pemasukan" : `${CATS[t.cat]?.emoji || "📦"} ${t.cat}`;
-    const dateStr = new Date(t.date).toLocaleDateString("id-ID", { day:"numeric", month:"short" });
-    const meta = t.note ? `${dateStr} · ${t.note}` : dateStr;
-    const sign = isIn ? "+" : "−";
-    const color = isIn ? "#4a8c5c" : "#d04f3a";
-    return `
-    <div class="tx-row">
-      <span class="dot" style="background:${dotColor}"></span>
-      <div class="tx-info">
-        <div class="tx-cat">${label}</div>
-        <div class="tx-meta">${meta}</div>
+function saveBudgets() {
+  ["Makan","Bensin","Groceries","Investasi","Transport","Langganan","Dll"].forEach(c=>{
+    const v = parseFloat(document.getElementById("budget_"+c)?.value);
+    if(v>0) budgets[c]=v; else delete budgets[c];
+  });
+  localStorage.setItem("keuangan_budgets",JSON.stringify(budgets));
+  toast("✓ Budget tersimpan");
+  renderDashboard();
+}
+
+// ═══════════════════════════════════════════════════
+// GOALS
+// ═══════════════════════════════════════════════════
+function showAddGoal(){document.getElementById("addGoalForm").style.display="block";}
+function addGoal(){
+  const name=document.getElementById("goalName").value.trim();
+  const target=parseFloat(document.getElementById("goalTarget").value);
+  const current=parseFloat(document.getElementById("goalCurrent").value)||0;
+  if(!name||!target){toast("Isi nama & target");return;}
+  goals.push({id:Date.now(),name,target,current});
+  localStorage.setItem("keuangan_goals",JSON.stringify(goals));
+  document.getElementById("addGoalForm").style.display="none";
+  document.getElementById("goalName").value="";
+  document.getElementById("goalTarget").value="";
+  document.getElementById("goalCurrent").value="";
+  renderGoals();
+  toast("✓ Goal ditambahkan");
+}
+function removeGoal(id){
+  goals=goals.filter(g=>g.id!==id);
+  localStorage.setItem("keuangan_goals",JSON.stringify(goals));
+  renderGoals();
+}
+function renderGoals(){
+  const el=document.getElementById("goalsList");
+  if(!el)return;
+  if(!goals.length){el.innerHTML='<div class="empty">Belum ada goal. Tambahkan target tabunganmu!</div>';return;}
+  el.innerHTML=goals.map(g=>{
+    const pct=Math.min(100,g.current/g.target*100);
+    const est=g.target-g.current;
+    return`<div class="goal-card">
+      <div style="display:flex;justify-content:space-between;align-items:start;">
+        <div style="font-weight:500;">${g.name}</div>
+        <button onclick="removeGoal(${g.id})" style="background:none;border:none;color:var(--ink2);cursor:pointer;font-size:13px;">✕</button>
       </div>
-      <span class="tx-amt" style="color:${color}">${sign}${fmt(t.amount)}</span>
-      <button class="del-btn" onclick="removeTx(${t.id})">✕</button>
+      <div class="goal-progress"><div class="goal-fill" style="width:${pct}%"></div></div>
+      <div class="goal-info">
+        <span>${fmt(g.current)} / ${fmt(g.target)}</span>
+        <span style="color:${pct>=100?'var(--green)':'var(--ink2)'};">${pct.toFixed(0)}% ${pct>=100?"🎉":"· sisa "+fmt(est)}</span>
+      </div>
     </div>`;
   }).join("");
 }
 
-function setSyncStatus(status, msg) {
-  const el = document.getElementById("syncStatus");
-  const colors = { idle:"#888", syncing:"#c9882b", success:"#4a8c5c", error:"#d04f3a" };
-  el.textContent = msg;
-  el.style.color = colors[status] || "#888";
-  const btn = document.getElementById("syncBtn");
-  btn.disabled = status === "syncing";
-  const icon = btn.querySelector("span") || btn;
-  if (status === "syncing") {
-    btn.innerHTML = '<span class="spinning">⟳</span>';
-  } else {
-    btn.innerHTML = "⟳";
+// ═══════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════
+function renderDashboard() {
+  const now = new Date();
+  const thisMonth = t => new Date(t.date).getMonth()===now.getMonth()&&new Date(t.date).getFullYear()===now.getFullYear();
+  const masukTotal = transactions.filter(t=>t.type==="masuk").reduce((s,t)=>s+t.amount,0);
+  const keluarTotal = transactions.filter(t=>t.type==="keluar").reduce((s,t)=>s+t.amount,0);
+  const saldo = masukTotal - keluarTotal;
+  const masukBulan = transactions.filter(t=>t.type==="masuk"&&thisMonth(t)).reduce((s,t)=>s+t.amount,0);
+  const keluarBulan = transactions.filter(t=>t.type==="keluar"&&thisMonth(t)).reduce((s,t)=>s+t.amount,0);
+  const portoIDR = 6654.86 * USD_IDR;
+  const networth = saldo + portoIDR;
+
+  document.getElementById("d-networth").textContent = fmt(networth);
+  document.getElementById("d-networthsub").textContent = `Saldo ${fmt(saldo)} + Portofolio ${fmt(portoIDR)}`;
+  document.getElementById("d-saldo").textContent = fmt(saldo);
+  document.getElementById("d-porto").textContent = "$6,654.86";
+  document.getElementById("d-masuk").textContent = fmt(masukBulan);
+  document.getElementById("d-keluar").textContent = fmt(keluarBulan);
+
+  renderTrend();
+  renderBudgetAlerts();
+  renderCatChart();
+}
+
+function renderTrend() {
+  const months = [];
+  const now = new Date();
+  for(let i=5;i>=0;i--) {
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    const m = d.getMonth(); const y = d.getFullYear();
+    const masuk = transactions.filter(t=>t.type==="masuk"&&new Date(t.date).getMonth()===m&&new Date(t.date).getFullYear()===y).reduce((s,t)=>s+t.amount,0);
+    const keluar = transactions.filter(t=>t.type==="keluar"&&new Date(t.date).getMonth()===m&&new Date(t.date).getFullYear()===y).reduce((s,t)=>s+t.amount,0);
+    months.push({label:d.toLocaleString("id-ID",{month:"short"}), masuk, keluar});
   }
+  const maxVal = Math.max(1,...months.map(m=>Math.max(m.masuk,m.keluar)));
+  document.getElementById("trendChart").innerHTML = months.map(m=>`
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;">
+      <div style="flex:1;width:100%;display:flex;align-items:flex-end;gap:2px;">
+        <div class="trend-bar" style="flex:1;height:${(m.masuk/maxVal*100)||2}%;background:var(--green);opacity:.7;" data-tip="${fmtShort(m.masuk)}"></div>
+        <div class="trend-bar" style="flex:1;height:${(m.keluar/maxVal*100)||2}%;background:var(--red);opacity:.7;" data-tip="${fmtShort(m.keluar)}"></div>
+      </div>
+    </div>`).join("");
+  document.getElementById("trendLabels").innerHTML = months.map(m=>`<div class="trend-label">${m.label}</div>`).join("");
+}
+
+function renderBudgetAlerts() {
+  const el = document.getElementById("budgetAlerts");
+  const card = document.getElementById("budgetAlertCard");
+  const entries = Object.entries(budgets);
+  if(!entries.length){card.style.display="none";return;}
+  card.style.display="";
+  el.innerHTML = entries.map(([cat,limit])=>{
+    const spent = getMonthSpend(cat);
+    const pct = Math.min(100, spent/limit*100);
+    const color = pct>=90?"var(--red)":pct>=70?"var(--yellow)":"var(--green)";
+    return`<div style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+        <span>${CATS[cat]?.emoji||"📦"} ${cat}</span>
+        <span style="color:${color};">${fmt(spent)} / ${fmt(limit)}</span>
+      </div>
+      <div class="budget-bar"><div class="budget-fill" style="width:${pct}%;background:${color};"></div></div>
+    </div>`;
+  }).join("");
+}
+
+function renderCatChart() {
+  const now = new Date();
+  const byCat = {};
+  transactions.filter(t=>t.type==="keluar"&&new Date(t.date).getMonth()===now.getMonth()&&new Date(t.date).getFullYear()===now.getFullYear()).forEach(t=>{
+    byCat[t.cat]=(byCat[t.cat]||0)+t.amount;
+  });
+  const entries = Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
+  const el = document.getElementById("d-catChart");
+  if(!entries.length){el.innerHTML='<div class="empty">Belum ada pengeluaran bulan ini.</div>';return;}
+  const max = entries[0][1];
+  el.innerHTML = entries.map(([c,v])=>`
+    <div class="bar-row">
+      <span class="bar-label">${CATS[c]?.emoji||"📦"} ${c}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${(v/max*100).toFixed(1)}%;background:${CATS[c]?.color||"#6b7494"};"></div></div>
+      <span class="bar-val">${fmtShort(v)}</span>
+    </div>`).join("");
+}
+
+// ═══════════════════════════════════════════════════
+// TRANSACTION LIST
+// ═══════════════════════════════════════════════════
+function removeTx(id){
+  transactions=transactions.filter(t=>t.id!==id);
+  save(); renderList(); renderDashboard(); syncToSheets();
+}
+
+function renderList() {
+  const shown = currentFilter==="semua"?transactions:transactions.filter(t=>t.type===currentFilter);
+  const el = document.getElementById("txList");
+  if(!shown.length){el.innerHTML='<div class="empty">Belum ada transaksi.</div>';return;}
+  // Group by month
+  const groups = {};
+  shown.forEach(t=>{
+    const d = new Date(t.date);
+    const key = d.toLocaleString("id-ID",{month:"long",year:"numeric"});
+    if(!groups[key]) groups[key]=[];
+    groups[key].push(t);
+  });
+  el.innerHTML = Object.entries(groups).map(([month,txs])=>`
+    <div style="font-size:11px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em;padding:10px 8px 6px;margin:0 -8px;">${month}</div>
+    ${txs.map(t=>{
+      const isIn=t.type==="masuk";
+      const dot=isIn?"var(--green)":(CATS[t.cat]?.color||"var(--ink2)");
+      const label=isIn?`💼 Pemasukan`:`${CATS[t.cat]?.emoji||"📦"} ${t.cat}`;
+      const dateStr=new Date(t.date).toLocaleDateString("id-ID",{day:"numeric",month:"short"});
+      return`<div class="tx-row">
+        <span class="tx-dot" style="background:${dot}"></span>
+        <div class="tx-info">
+          <div class="tx-cat">${label}</div>
+          <div class="tx-meta">${dateStr}${t.note?` · ${t.note}`:""}</div>
+        </div>
+        <span class="tx-amt" style="color:${isIn?"var(--green)":"var(--red)"};">${isIn?"+":"−"}${fmt(t.amount)}</span>
+        <button class="del-btn" onclick="removeTx(${t.id})">✕</button>
+      </div>`;
+    }).join("")}`).join("");
+}
+
+// ═══════════════════════════════════════════════════
+// PORTFOLIO
+// ═══════════════════════════════════════════════════
+function showPortoTab(tab) {
+  ["holdings","history","analysis","strategi"].forEach(t=>{
+    const el=document.getElementById("pt-"+t);
+    if(el) el.style.display=t===tab?"":"none";
+  });
+  document.querySelectorAll("#pg-porto .tabs .tab-btn").forEach((b,i)=>{
+    b.classList.toggle("active",["holdings","history","analysis","strategi"][i]===tab);
+  });
+  if(tab==="history") renderPortoTx();
+  if(tab==="analysis") renderAnalysis();
+}
+
+function renderPorto() {
+  const el = document.getElementById("assetList");
+  const activeAssets = PORTFOLIO_ASSETS.filter(a=>a.holdings>0);
+  el.innerHTML = activeAssets.sort((a,b)=>b.holdings-a.holdings).map(a=>{
+    const meta = TOKEN_META[a.ticker]||{name:a.name,icon:"?",color:"#6b7494"};
+    const pnlPos = a.pnl>=0;
+    return`<div class="asset-row">
+      <div class="asset-icon" style="background:${meta.color}22;color:${meta.color};">${meta.icon}</div>
+      <div class="asset-info">
+        <div class="asset-name">${a.name}</div>
+        <div class="asset-ticker">${a.ticker} · ${a.amount.toLocaleString("en-US",{maximumFractionDigits:6})} · avg ${fmtUSD(a.avgBuy)}</div>
+      </div>
+      <div class="asset-right">
+        <div class="asset-val">${fmtUSD(a.holdings)}</div>
+        <div class="asset-pnl" style="color:${pnlPos?"var(--green)":"var(--red)"};">${pnlPos?"+":""}${fmtUSD(a.pnl)} (${a.pnlPct.toFixed(2)}%)</div>
+      </div>
+    </div>`;
+  }).join("");
+
+  // populate token filter
+  const sel = document.querySelector("#pt-history select");
+  const tokens = [...new Set(PORTFOLIO_TRANSACTIONS.map(t=>t.token))].sort();
+  sel.innerHTML = `<option value="all">Semua Token</option>` + tokens.map(t=>`<option value="${t}">${t}</option>`).join("");
+}
+
+function setPortoFilter(type){
+  portoFilter.type=type;
+  document.querySelectorAll("#pt-history .filter-row .tab-btn").forEach((b,i)=>{
+    b.classList.toggle("active",["all","buy","sell"][i]===type);
+  });
+  renderPortoTx();
+}
+function filterPortoToken(token){portoFilter.token=token;renderPortoTx();}
+
+function renderPortoTx() {
+  let txs = PORTFOLIO_TRANSACTIONS;
+  if(portoFilter.type!=="all") txs=txs.filter(t=>t.type===portoFilter.type);
+  if(portoFilter.token!=="all") txs=txs.filter(t=>t.token===portoFilter.token);
+  const el = document.getElementById("portoTxList");
+  if(!txs.length){el.innerHTML='<div class="empty">Tidak ada transaksi.</div>';return;}
+  el.innerHTML = txs.map(t=>{
+    const meta=TOKEN_META[t.token]||{color:"#6b7494",icon:"?"};
+    const isBuy=t.type==="buy";
+    const total=t.total>100?fmtUSD(t.total):t.total.toFixed(4)+" USD";
+    return`<div class="tx-row">
+      <div class="asset-icon" style="width:28px;height:28px;font-size:12px;background:${meta.color}22;color:${meta.color};border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${meta.icon}</div>
+      <div class="tx-info">
+        <div class="tx-cat" style="display:flex;align-items:center;gap:6px;">
+          <span class="badge ${isBuy?"pos":"neg"}">${isBuy?"↓ BUY":"↑ SELL"}</span>
+          <span>${t.token}</span>
+        </div>
+        <div class="tx-meta">${t.date} · ${t.amount.toLocaleString("en-US",{maximumFractionDigits:6})} @ $${parseFloat(t.price).toLocaleString("en-US",{maximumFractionDigits:2})}</div>
+      </div>
+      <div class="tx-amt" style="color:${isBuy?"var(--red)":"var(--green)"};">${isBuy?"-":"+"}${total}</div>
+    </div>`;
+  }).join("");
+}
+
+function renderAnalysis() {
+  // Allocation chart
+  const total = PORTFOLIO_ASSETS.filter(a=>a.holdings>0).reduce((s,a)=>s+a.holdings,0);
+  document.getElementById("allocationChart").innerHTML = PORTFOLIO_ASSETS.filter(a=>a.holdings>0).sort((a,b)=>b.holdings-a.holdings).map(a=>{
+    const meta=TOKEN_META[a.ticker]||{color:"#6b7494"};
+    const pct=(a.holdings/total*100).toFixed(1);
+    return`<div class="bar-row">
+      <span class="bar-label" style="font-size:12px;">${a.ticker}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${meta.color};"></div></div>
+      <span class="bar-val">${pct}%</span>
+    </div>`;
+  }).join("");
+
+  // BTC DCA
+  const btcBuys = PORTFOLIO_TRANSACTIONS.filter(t=>t.token==="BTC"&&t.type==="buy"&&t.total>0.1);
+  const totalBtcInvested = btcBuys.reduce((s,t)=>s+t.total,0);
+  const totalBtcAmount = btcBuys.reduce((s,t)=>s+t.amount,0);
+  const avgBtcPrice = totalBtcInvested/totalBtcAmount;
+  document.getElementById("btcDca").innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="card2"><div class="stat-label">Total DCA</div><div style="font-weight:600;color:var(--yellow);">${fmtUSD(totalBtcInvested)}</div></div>
+      <div class="card2"><div class="stat-label">BTC Terkumpul</div><div style="font-weight:600;color:var(--yellow);">₿${totalBtcAmount.toFixed(5)}</div></div>
+      <div class="card2"><div class="stat-label">Avg Buy Price</div><div style="font-weight:600;">${fmtUSD(avgBtcPrice)}</div></div>
+      <div class="card2"><div class="stat-label">Harga Saat Ini</div><div style="font-weight:600;color:var(--green);">$73,185</div></div>
+    </div>
+    <div style="margin-top:10px;padding:10px;background:var(--card2);border-radius:var(--rs);font-size:13px;color:var(--ink2);">
+      DCA sejak Jan 2026 · ${btcBuys.length} transaksi
+    </div>`;
+
+  // Top/bottom performers
+  const sorted = [...PORTFOLIO_ASSETS].filter(a=>a.holdings>0).sort((a,b)=>b.pnlPct-a.pnlPct);
+  document.getElementById("topPerformer").innerHTML = sorted.map((a,i)=>{
+    const meta=TOKEN_META[a.ticker]||{color:"#6b7494",icon:"?"};
+    return`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+      <div class="asset-icon" style="width:30px;height:30px;font-size:13px;background:${meta.color}22;color:${meta.color};border-radius:50%;display:flex;align-items:center;justify-content:center;">${meta.icon}</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:500;">${a.ticker}</div></div>
+      <span class="badge ${a.pnl>=0?"pos":"neg"}">${a.pnl>=0?"+":""}${a.pnlPct.toFixed(2)}%</span>
+    </div>`;
+  }).join("");
+}
+
+// ═══════════════════════════════════════════════════
+// GOOGLE SHEETS SYNC
+// ═══════════════════════════════════════════════════
+function setSyncStatus(status, msg) {
+  const colors={idle:"var(--ink2)",syncing:"var(--yellow)",success:"var(--green)",error:"var(--red)"};
+  const el=document.getElementById("syncStatus");
+  if(el){el.textContent=msg;el.style.color=colors[status]||"var(--ink2)";}
+  const btn=document.getElementById("syncBtn");
+  if(btn){btn.disabled=status==="syncing";btn.innerHTML=status==="syncing"?'<span class="spinning">⟳</span>':"⟳";}
 }
 
 async function syncToSheets() {
-  setSyncStatus("syncing", "Menyinkron…");
   try {
-    await fetch(SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "sync", transactions }),
-    });
-    const now = new Date().toLocaleTimeString("id-ID", { hour:"2-digit", minute:"2-digit" });
-    setSyncStatus("success", `✓ Tersimpan ${now}`);
-    localStorage.setItem("lastSync", now);
-    setTimeout(() => setSyncStatus("idle", `Tersinkron ${now}`), 3000);
-  } catch(e) {
-    setSyncStatus("error", "✗ Gagal sync");
-    setTimeout(() => setSyncStatus("idle", "Gagal sync"), 4000);
-  }
+    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"sync",transactions})});
+    const now=new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
+    setSyncStatus("idle",`Tersinkron ${now}`);
+    localStorage.setItem("lastSync",now);
+  } catch(e){setSyncStatus("error","Gagal sync");}
 }
 
 async function syncFromSheets() {
-  setSyncStatus("syncing", "Mengambil data…");
+  setSyncStatus("syncing","Mengambil data…");
   try {
-    const res = await fetch(SCRIPT_URL + "?action=get");
-    const json = await res.json();
-    if (json.transactions) {
-      transactions = json.transactions.map(t => ({ ...t, amount: parseFloat(t.amount) }));
-      save();
-      render();
-      const now = new Date().toLocaleTimeString("id-ID", { hour:"2-digit", minute:"2-digit" });
-      setSyncStatus("success", `✓ Diperbarui ${now}`);
-      setTimeout(() => setSyncStatus("idle", `Tersinkron ${now}`), 3000);
+    const res=await fetch(SCRIPT_URL+"?action=get");
+    const json=await res.json();
+    if(json.transactions){
+      transactions=json.transactions.map(t=>({...t,amount:parseFloat(t.amount)}));
+      save(); renderDashboard(); renderList();
+      const now=new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
+      setSyncStatus("success",`✓ Diperbarui ${now}`);
+      localStorage.setItem("lastSync",now);
+      setTimeout(()=>setSyncStatus("idle",`Tersinkron ${now}`),3000);
     }
-  } catch(e) {
-    setSyncStatus("error", "✗ Gagal ambil data");
-    setTimeout(() => setSyncStatus("idle", ""), 4000);
-  }
+  } catch(e){setSyncStatus("error","✗ Gagal ambil data");setTimeout(()=>setSyncStatus("idle",""),3000);}
 }
 
-function toast(msg) {
-  const el = document.getElementById("toast");
-  el.textContent = msg;
-  el.classList.add("show");
-  setTimeout(() => el.classList.remove("show"), 2500);
-}
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+document.getElementById("inputAmount").addEventListener("keydown",e=>e.key==="Enter"&&addTx());
+document.getElementById("inputNote").addEventListener("keydown",e=>e.key==="Enter"&&addTx());
 
-// Enter key support
-document.getElementById("inputAmount").addEventListener("keydown", e => e.key === "Enter" && addTx());
-document.getElementById("inputNote").addEventListener("keydown", e => e.key === "Enter" && addTx());
+const ls=localStorage.getItem("lastSync");
+if(ls) setSyncStatus("idle",`Tersinkron ${ls}`);
+else setSyncStatus("idle","Belum disinkron");
 
-// Init
-const ls = localStorage.getItem("lastSync");
-if (ls) setSyncStatus("idle", `Tersinkron ${ls}`);
-render();
+renderDashboard();
+renderBudgetInputs();
+renderGoals();
 </script>
 </body>
 </html>
